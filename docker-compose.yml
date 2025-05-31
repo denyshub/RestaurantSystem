@@ -1,0 +1,27 @@
+version: '3.9'
+
+services:
+  user_service:
+    build: ./user_service
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./user_service/.env
+    depends_on:
+      - user_db
+    volumes:
+      - ./user_service:/app  # зручно для live reload
+    restart: always
+
+  user_db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: user_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  pgdata:

@@ -1,7 +1,7 @@
 from typing import Optional
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, Float, Text
 from datetime import datetime
-from restaurant_service.app.database import Base
+from app.database import Base
 
 
 class Restaurant(Base):

@@ -1,51 +1,52 @@
-from pydantic import BaseModel, EmailStr, HttpUrl, Field
+from pydantic import validator, AnyHttpUrl
+from pydantic import BaseModel, EmailStr, Field, confloat
 from typing import Optional
 from datetime import datetime
 
 
 class RestaurantBase(BaseModel):
-    name: str = Field(..., max_length=100)
+    name: str = Field(..., min_length=1, max_length=100)
     description: Optional[str] = None
     address: str = Field(..., max_length=255)
-    city: Optional[str] = None
-    country: Optional[str] = None
-    phone_number: Optional[str] = None
+    city: Optional[str] = Field(None, max_length=100)
+    country: Optional[str] = Field(None, max_length=100)
+    phone_number: Optional[str] = Field(None, max_length=20)
     email: Optional[EmailStr] = None
-    website: Optional[HttpUrl] = None
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
-    is_active: Optional[bool] = True
-    is_verified: Optional[bool] = False
+    website: Optional[str] = Field(None, max_length=255)
+    latitude: Optional[confloat(ge=-90, le=90)] = None
+    longitude: Optional[confloat(ge=-180, le=180)] = None
+
+    @validator('website')
+    def validate_website(cls, v):
+        if v is None:
+            return v
+        if not v.startswith(('http://', 'https://')):
+            v = 'https://' + v
+        return v
 
 
 class RestaurantCreate(RestaurantBase):
-    owner_id: int  # обов’язково вказати при створенні
+    owner_id: Optional[int] = None
 
 
-class RestaurantUpdate(BaseModel):
-    name: Optional[str] = Field(None, max_length=100)
-    description: Optional[str] = None
+class RestaurantUpdate(RestaurantBase):
+    name: Optional[str] = Field(None, min_length=1, max_length=100)
     address: Optional[str] = Field(None, max_length=255)
-    city: Optional[str] = None
-    country: Optional[str] = None
-    phone_number: Optional[str] = None
-    email: Optional[EmailStr] = None
-    website: Optional[HttpUrl] = None
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
     is_active: Optional[bool] = None
     is_verified: Optional[bool] = None
 
 
-class RestaurantInDBBase(RestaurantBase):
+class RestaurantInDB(RestaurantBase):
     id: int
     owner_id: int
+    is_active: bool
+    is_verified: bool
     created_at: datetime
     updated_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
-class Restaurant(RestaurantInDBBase):
+class RestaurantResponse(RestaurantInDB):
     pass

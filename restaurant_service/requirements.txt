@@ -1,0 +1,7 @@
+fastapi==0.110.2
+uvicorn[standard]==0.29.0
+sqlalchemy==2.0.30
+asyncpg==0.29.0
+alembic==1.13.1
+pydantic[email]==2.7.1
+python-dotenv==1.0.1

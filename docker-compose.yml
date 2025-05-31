@@ -10,7 +10,7 @@ services:
     depends_on:
       - user_db
     volumes:
-      - ./user_service:/app  # зручно для live reload
+      - ./user_service:/app
     restart: always
 
   user_db:
@@ -23,5 +23,30 @@ services:
       - pgdata:/var/lib/postgresql/data
     restart: always
 
+  restaurant_service:
+    build: ./restaurant_service
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./restaurant_service/.env
+    environment:
+      - PYTHONPATH=/app
+    depends_on:
+      - restaurant_db
+    volumes:
+      - ./restaurant_service:/app
+    restart: always
+
+  restaurant_db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: restaurant_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata_restaurant:/var/lib/postgresql/data
+    restart: always
+
 volumes:
   pgdata:
+  pgdata_restaurant:

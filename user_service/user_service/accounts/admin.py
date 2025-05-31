@@ -16,10 +16,21 @@ class UserAdmin(BaseUserAdmin):
     # Поля, які використовуються для створення/редагування користувача в адмінці
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        (_("Особисті дані"), {"fields": ("full_name", "username", "phone_number", "role")}),
+        (
+            _("Особисті дані"),
+            {"fields": ("full_name", "username", "phone_number", "role")},
+        ),
         (
             _("Права доступу"),
-            {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")},
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "groups",
+                    "user_permissions",
+                )
+            },
         ),
         (_("Важливі дати"), {"fields": ("date_joined", "last_login")}),
     )
@@ -29,7 +40,15 @@ class UserAdmin(BaseUserAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ("email", "full_name", "password1", "password2", "is_staff", "is_active", "role"),
+                "fields": (
+                    "email",
+                    "full_name",
+                    "password1",
+                    "password2",
+                    "is_staff",
+                    "is_active",
+                    "role",
+                ),
             },
         ),
     )

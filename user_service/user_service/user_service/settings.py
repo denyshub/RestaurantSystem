@@ -9,7 +9,9 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+
 import os
+import sys
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -28,7 +30,7 @@ SECRET_KEY = "django-insecure-bb-+@ayvl4vlj*hdiqk(ee0=ct#-$i+n8l)#i39j528@e_*-6g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -40,36 +42,37 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'rest_framework',
-    'rest_framework_simplejwt',
-    'rest_framework_simplejwt.token_blacklist',
-    'corsheaders',
-    'accounts',
-
-    'django.contrib.sites',  # обов'язково
-    'allauth',
-    'rest_framework.authtoken',
-    'allauth.account',
-    'allauth.socialaccount',  # якщо потрібна соціальна авторизація
-    'dj_rest_auth',
-    'dj_rest_auth.registration',
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
+    "corsheaders",
+    "accounts",
+    "django.contrib.sites",  # обов'язково
+    "allauth",
+    "rest_framework.authtoken",
+    "allauth.account",
+    "allauth.socialaccount",  # якщо потрібна соціальна авторизація
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
 ]
 
 SITE_ID = 1
 
-ACCOUNT_AUTHENTICATION_METHOD = 'email'  # або 'username_email'
+ACCOUNT_AUTHENTICATION_METHOD = "email"  # або 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # або 'mandatory' якщо хочеш email підтвердження
+ACCOUNT_EMAIL_VERIFICATION = (
+    "mandatory"  # або 'mandatory' якщо хочеш email підтвердження
+)
 
 REST_USE_JWT = True  # Використання JWT
 DJRESTAUTH_TOKEN_MODEL = None
 
 # Email configuration for development (prints to console)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -77,6 +80,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
     "allauth.account.middleware.AccountMiddleware",
 ]
 
@@ -101,9 +105,10 @@ TEMPLATES = [
 WSGI_APPLICATION = "user_service.wsgi.application"
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
     ),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
 }
 
 AUTH_USER_MODEL = "accounts.User"
@@ -113,50 +118,68 @@ from datetime import timedelta
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-    "AUTH_HEADER_TYPES": ("Bearer",),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": True,
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "JTI_CLAIM": "jti",
+    "TOKEN_USER_CLASS": "accounts.User",
 }
 
 # dj-rest-auth configuration
 REST_AUTH = {
-    'USE_JWT': True,
-    'JWT_AUTH_COOKIE': 'jwt-auth',
-    'JWT_AUTH_REFRESH_COOKIE': 'jwt-refresh-token',
-    'JWT_AUTH_RETURN_EXPIRATION': True,
-    'JWT_AUTH_HTTPONLY': False,
-    'TOKEN_MODEL': None,
-    'SESSION_LOGIN': False,
-    'OLD_PASSWORD_FIELD_ENABLED': True,
-    'PASSWORD_RESET_USE_SITES_DOMAIN': True,
+    "USE_JWT": True,
+    "JWT_AUTH_COOKIE": "access_token",
+    "JWT_AUTH_REFRESH_COOKIE": "refresh_token",
+    "JWT_AUTH_RETURN_EXPIRATION": True,
+    "JWT_AUTH_HTTPONLY": False,
+    "TOKEN_MODEL": None,
+    "SESSION_LOGIN": False,
+    "OLD_PASSWORD_FIELD_ENABLED": True,
+    "PASSWORD_RESET_USE_SITES_DOMAIN": True,
+    "JWT_AUTH_SECURE": False,
+    "JWT_AUTH_COOKIE_USE_CSRF": False,
+    "JWT_AUTH_SAMESITE": "Lax",
+    "JWT_AUTH_RETURN_EXPIRATION": True,
+    "REST_USE_JWT": True,
+    "JWT_TOKEN_CLAIMS_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
 }
 
 # URLs for password reset
-ACCOUNT_EMAIL_CONFIRMATION_URL = 'email/verify/{key}'
-PASSWORD_RESET_CONFIRM_URL = 'password/reset/confirm/{uid}/{token}'
+ACCOUNT_EMAIL_CONFIRMATION_URL = "email/verify/{key}"
+PASSWORD_RESET_CONFIRM_URL = "password/reset/confirm/{uid}/{token}"
 
 # Frontend URLs
-FRONTEND_URL = 'http://localhost:3000'  # Change this to your frontend URL if different
-PASSWORD_RESET_CONFIRM_REDIRECT_URL = f'{FRONTEND_URL}/password-reset-complete'
-EMAIL_CONFIRM_REDIRECT_URL = f'{FRONTEND_URL}/email-verify-complete'
+FRONTEND_URL = "http://localhost:3000"  # Change this to your frontend URL if different
+PASSWORD_RESET_CONFIRM_REDIRECT_URL = f"{FRONTEND_URL}/password-reset-complete"
+EMAIL_CONFIRM_REDIRECT_URL = f"{FRONTEND_URL}/email-verify-complete"
 
 # Site configuration
-SITE_URL = 'http://127.0.0.1:8000'  # Your local development URL
+SITE_URL = "http://127.0.0.1:8000"  # Your local development URL
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("POSTGRES_DB"),
-        "USER": os.environ.get("POSTGRES_USER"),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
-        "HOST": os.environ.get("POSTGRES_HOST"),
-        "PORT": os.environ.get("POSTGRES_PORT", 5432),
+if "test" in sys.argv:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": ":memory:",
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("POSTGRES_DB"),
+            "USER": os.environ.get("POSTGRES_USER"),
+            "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+            "HOST": os.environ.get("POSTGRES_HOST"),
+            "PORT": os.environ.get("POSTGRES_PORT", 5432),
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

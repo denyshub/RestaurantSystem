@@ -28,7 +28,7 @@ SECRET_KEY = "django-insecure-bb-+@ayvl4vlj*hdiqk(ee0=ct#-$i+n8l)#i39j528@e_*-6g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -128,7 +128,21 @@ REST_AUTH = {
     'JWT_AUTH_HTTPONLY': False,
     'TOKEN_MODEL': None,
     'SESSION_LOGIN': False,
+    'OLD_PASSWORD_FIELD_ENABLED': True,
+    'PASSWORD_RESET_USE_SITES_DOMAIN': True,
 }
+
+# URLs for password reset
+ACCOUNT_EMAIL_CONFIRMATION_URL = 'email/verify/{key}'
+PASSWORD_RESET_CONFIRM_URL = 'password/reset/confirm/{uid}/{token}'
+
+# Frontend URLs
+FRONTEND_URL = 'http://localhost:3000'  # Change this to your frontend URL if different
+PASSWORD_RESET_CONFIRM_REDIRECT_URL = f'{FRONTEND_URL}/password-reset-complete'
+EMAIL_CONFIRM_REDIRECT_URL = f'{FRONTEND_URL}/email-verify-complete'
+
+# Site configuration
+SITE_URL = 'http://127.0.0.1:8000'  # Your local development URL
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
